@@ -745,9 +745,6 @@ function HandView(cuffCol=0xff4f9a,lod=0){
   const skinMesh=new THREE.Mesh(T.geo,handMats[1]);skinMesh.frustumCulled=false;g.add(skinMesh);
   const AN=10,SL=TubeSet([{rings:AN,radial:armRing.n}]);
   const arm=new THREE.Mesh(SL.geo,armMats[1]);arm.frustumCulled=false;arm.renderOrder=2;g.add(arm);
-  const nailG=G('nailU',()=>{const s=new THREE.SphereGeometry(1,12,6,0,Math.PI*2,0,Math.PI*0.5);return s});
-  const nails=[0,1,2,3,4].map(()=>{const m=new THREE.Mesh(nailG,nailMat);m.frustumCulled=false;g.add(m);return m});
-  const _nd=new V3(),_nu=new V3(),_nc=new V3();
   const cuffM=new THREE.MeshBasicMaterial({color:cuffCol}); // kept for API compatibility (not drawn)
   return {g,cuffM,
     skin(i){skinMesh.material=handMats[i]||handMats[1];arm.material=armMats[i]||armMats[1]},
@@ -774,13 +771,6 @@ function HandView(cuffCol=0xff4f9a,lod=0){
         T.ring(5,i,_pc,_pX,_pN,hw,ht,palmRing)}
       for(let k=1;k<=3;k++){const th=k/3*Math.PI/2;_pc.copy(_pW).addScaledVector(_pT,plen*1.06+0.011*Math.sin(th)).addScaledVector(_hy,-0.0012);T.ring(5,PS-1+k,_pc,_pX,_pN,hwK*Math.cos(th)+0.0003,0.0128*sc*Math.cos(th)+0.0003,palmRing)}
       T.done();
-      // fingernails: thin glossy caps on the back of each fingertip
-      for(let f=0;f<5;f++){const b=f===0?1:5+(f-1)*5,dj=J[b+2+(f===0?0:1)],tj=J[b+3+(f===0?0:1)],r=RADJ[b+3+(f===0?0:1)]*sc*0.92;
-        _nd.subVectors(tj,dj);const L=_nd.length();if(L<1e-5)continue;_nd.divideScalar(L);
-        if(f===0){_nu.copy(_hx).multiplyScalar(mir?0.8:-0.8).addScaledVector(_hy,0.6)}else _nu.crossVectors(_hx,_nd);
-        _nu.addScaledVector(_nd,-_nu.dot(_nd)).normalize();
-        _nc.copy(dj).lerp(tj,0.62).addScaledVector(_nu,r*0.78).addScaledVector(_nd,-r*0.45);
-        const n=nails[f];n.position.copy(_nc);basisQ(_nu,_nd,n.quaternion);n.scale.set(r*0.86,r*0.22,Math.min(L*0.62,r*1.25))}
       // smooth skin forearm that fades out toward the elbow
       _tc.copy(_pN).negate();
       for(let i=0;i<AN;i++){const u=i/(AN-1);_pc.copy(_pW).addScaledVector(_pT,0.01-u*0.24).addScaledVector(_hy,-0.002*(1-u));
